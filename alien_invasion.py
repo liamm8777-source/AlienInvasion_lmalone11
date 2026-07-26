@@ -10,15 +10,18 @@ import sys
 
 import pygame
 
+from ship import Ship
+
 
 def main():
-    """Initialize Pygame and run the main game loop."""
+    
     pygame.init()
 
     screen = pygame.display.set_mode((1200, 800))
     pygame.display.set_caption("Alien Invasion - Track 1")
 
     clock = pygame.time.Clock()
+    ship = Ship(screen)
 
     while True:
         for event in pygame.event.get():
@@ -27,6 +30,8 @@ def main():
                 sys.exit()
 
         screen.fill((20, 20, 40))
+        ship.draw()
+
         pygame.display.flip()
         clock.tick(60)
 
