@@ -11,7 +11,7 @@ import pygame
 
 
 class Ship:
-    
+    """Represent the player's ship."""
 
     def __init__(self, screen):
         """Load the ship image and place it on the left side."""
@@ -26,6 +26,16 @@ class Ship:
 
         screen_rect = self.screen.get_rect()
         self.rect.midleft = (20, screen_rect.centery)
+        self.moving_up = False
+        self.moving_down = False
+
+    def update(self):
+        """Move the ship vertically while keeping it on the screen."""
+        if self.moving_up:
+            self.rect.top = max(0, self.rect.top - 5)
+        if self.moving_down:
+            screen_bottom = self.screen.get_rect().bottom
+            self.rect.bottom = min(screen_bottom, self.rect.bottom + 5)
 
     def draw(self):
         """Draw the ship on the screen."""

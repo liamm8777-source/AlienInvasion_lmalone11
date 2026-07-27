@@ -14,7 +14,8 @@ from ship import Ship
 
 
 def main():
-    
+    """Run the game and handle ship movement."""
+
     pygame.init()
 
     screen = pygame.display.set_mode((1200, 800))
@@ -28,7 +29,18 @@ def main():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_UP:
+                    ship.moving_up = True
+                elif event.key == pygame.K_DOWN:
+                    ship.moving_down = True
+            elif event.type == pygame.KEYUP:
+                if event.key == pygame.K_UP:
+                    ship.moving_up = False
+                elif event.key == pygame.K_DOWN:
+                    ship.moving_down = False
 
+        ship.update()
         screen.fill((20, 20, 40))
         ship.draw()
 
