@@ -1,7 +1,9 @@
 """
 Program: Alien Invasion - Track 1
 Author: Liam Malone
-Purpose: Create and display the player's spaceship.
+Purpose: Create, display, and move the player's spaceship.
+Starter Code: Based on the Alien Invasion starter repository:
+https://github.com/RedBeard41/alien_Invasion_starter.git
 Date: 07/25/2026
 """
 
@@ -11,7 +13,7 @@ import pygame
 
 
 class Ship:
-    """Represent the player's ship."""
+    """Represent the player's spaceship."""
 
     def __init__(self, screen):
         """Load the ship image and place it on the left side."""
@@ -26,6 +28,7 @@ class Ship:
 
         screen_rect = self.screen.get_rect()
         self.rect.midleft = (20, screen_rect.centery)
+
         self.moving_up = False
         self.moving_down = False
 
@@ -33,9 +36,13 @@ class Ship:
         """Move the ship vertically while keeping it on the screen."""
         if self.moving_up:
             self.rect.top = max(0, self.rect.top - 5)
+
         if self.moving_down:
             screen_bottom = self.screen.get_rect().bottom
-            self.rect.bottom = min(screen_bottom, self.rect.bottom + 5)
+            self.rect.bottom = min(
+                screen_bottom,
+                self.rect.bottom + 5
+            )
 
     def draw(self):
         """Draw the ship on the screen."""
