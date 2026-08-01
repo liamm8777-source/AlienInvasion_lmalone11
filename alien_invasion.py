@@ -1,8 +1,7 @@
 """
 Program: Alien Invasion - Track 1
 Author: Liam Malone
-Purpose: Create a Pygame game with a ship that moves vertically and fires
-lasers horizontally at aliens.
+Purpose: Create a Pygame game with a ship, lasers, and an alien fleet.
 Starter Code: Based on the Alien Invasion starter repository:
 https://github.com/RedBeard41/alien_Invasion_starter.git
 Date: 07/25/2026
@@ -12,12 +11,34 @@ import sys
 
 import pygame
 
+from alien import Alien
 from laser import Laser
 from ship import Ship
 
 
+def create_fleet(screen):
+    """Create a small alien fleet on the right side of the screen."""
+    aliens = []
+
+    start_x = screen.get_rect().right - 180
+    start_y = 100
+    horizontal_spacing = 80
+    vertical_spacing = 100
+
+    for column in range(2):
+        for row in range(6):
+            x_position = start_x + (column * horizontal_spacing)
+            y_position = start_y + (row * vertical_spacing)
+
+            aliens.append(
+                Alien(screen, x_position, y_position)
+            )
+
+    return aliens
+
+
 def main():
-    """Run the game and handle ship movement and laser firing."""
+    """Run the game and handle the ship, lasers, and alien fleet."""
     pygame.init()
 
     screen = pygame.display.set_mode((1200, 800))
@@ -26,6 +47,7 @@ def main():
     clock = pygame.time.Clock()
     ship = Ship(screen)
     lasers = []
+    aliens = create_fleet(screen)
 
     while True:
         for event in pygame.event.get():
@@ -64,6 +86,9 @@ def main():
 
         for laser in lasers:
             laser.draw()
+
+        for alien in aliens:
+            alien.draw()
 
         pygame.display.flip()
         clock.tick(60)
