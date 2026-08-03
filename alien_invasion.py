@@ -1,7 +1,7 @@
 """
 Program: Alien Invasion - Track 1
 Author: Liam Malone
-Purpose: Create a Pygame game with a ship, lasers, and an alien fleet.
+Purpose: Create a Pygame game with a ship, lasers, and a moving alien fleet.
 Starter Code: Based on the Alien Invasion starter repository:
 https://github.com/RedBeard41/alien_Invasion_starter.git
 Date: 07/25/2026
@@ -38,7 +38,7 @@ def create_fleet(screen):
 
 
 def main():
-    """Run the game and handle the ship, lasers, and alien fleet."""
+    """Run the game and handle the ship, lasers, and moving alien fleet."""
     pygame.init()
 
     screen = pygame.display.set_mode((1200, 800))
@@ -73,6 +73,9 @@ def main():
 
         for laser in lasers:
             laser.update()
+
+        for alien in aliens:
+            alien.update()
 
         screen_right = screen.get_rect().right
         lasers = [

@@ -1,7 +1,7 @@
 """
 Program: Alien Invasion - Track 1
 Author: Liam Malone
-Purpose: Create and display an alien in the game's fleet.
+Purpose: Create, display, and move an alien in the game's fleet.
 Starter Code: Based on the Alien Invasion starter repository:
 https://github.com/RedBeard41/alien_Invasion_starter.git
 Date: 08/01/2026
@@ -34,6 +34,12 @@ class Alien:
         self.rect = self.image.get_rect()
         self.rect.x = x_position
         self.rect.y = y_position
+
+        self.speed = 2
+
+    def update(self):
+        """Move the alien horizontally toward the left."""
+        self.rect.x -= self.speed
 
     def draw(self):
         """Draw the alien on the screen."""
