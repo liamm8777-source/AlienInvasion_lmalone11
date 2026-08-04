@@ -37,8 +37,28 @@ def create_fleet(screen):
     return aliens
 
 
+def check_laser_alien_collisions(lasers, aliens):
+    """Remove lasers and aliens that collide with each other."""
+    remaining_lasers = []
+
+    for laser in lasers:
+        alien_hit = None
+
+        for alien in aliens:
+            if laser.rect.colliderect(alien.rect):
+                alien_hit = alien
+                break
+
+        if alien_hit is not None:
+            aliens.remove(alien_hit)
+        else:
+            remaining_lasers.append(laser)
+
+    return remaining_lasers
+
+
 def main():
-    """Run the game and handle the ship, lasers, and moving alien fleet."""
+    """Run the game and handle the ship, lasers, fleet, and collisions."""
     pygame.init()
 
     screen = pygame.display.set_mode((1200, 800))
@@ -83,6 +103,8 @@ def main():
             for laser in lasers
             if laser.rect.left < screen_right
         ]
+
+        lasers = check_laser_alien_collisions(lasers, aliens)
 
         screen.fill((20, 20, 40))
         ship.draw()
