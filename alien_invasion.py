@@ -1,7 +1,8 @@
 """
 Program: Alien Invasion - Track 1
 Author: Liam Malone
-Purpose: Create a Pygame game with a ship, lasers, and a moving alien fleet.
+Purpose: Create a Pygame game with a ship, lasers, a moving alien fleet,
+collisions, and game restart conditions.
 Starter Code: Based on the Alien Invasion starter repository:
 https://github.com/RedBeard41/alien_Invasion_starter.git
 Date: 07/25/2026
@@ -57,8 +58,30 @@ def check_laser_alien_collisions(lasers, aliens):
     return remaining_lasers
 
 
+def restart_game(screen, ship, lasers, aliens):
+    """Reset the ship, lasers, and alien fleet."""
+    ship.rect.midleft = (20, screen.get_rect().centery)
+    ship.moving_up = False
+    ship.moving_down = False
+
+    lasers.clear()
+    aliens.clear()
+    aliens.extend(create_fleet(screen))
+
+
+def check_loss_conditions(screen, ship, lasers, aliens):
+    """Restart when an alien hits the ship or reaches the left edge."""
+    game_lost = any(
+        alien.rect.colliderect(ship.rect) or alien.rect.left <= 0
+        for alien in aliens
+    )
+
+    if game_lost:
+        restart_game(screen, ship, lasers, aliens)
+
+
 def main():
-    """Run the game and handle the ship, lasers, fleet, and collisions."""
+    """Run the game and handle movement, collisions, and restarts."""
     pygame.init()
 
     screen = pygame.display.set_mode((1200, 800))
@@ -105,6 +128,7 @@ def main():
         ]
 
         lasers = check_laser_alien_collisions(lasers, aliens)
+        check_loss_conditions(screen, ship, lasers, aliens)
 
         screen.fill((20, 20, 40))
         ship.draw()
