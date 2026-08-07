@@ -1,7 +1,7 @@
 """
 Program: Alien Invasion - Track 1
 Author: Liam Malone
-Purpose: Create a Pygame game with a ship, lasers, a moving alien fleet,
+Purpose: Create a Pygame game with a Play button, ship, lasers, alien fleet,
 collisions, and game restart conditions.
 Starter Code: Based on the Alien Invasion starter repository:
 https://github.com/RedBeard41/alien_Invasion_starter.git
@@ -13,6 +13,7 @@ import sys
 import pygame
 
 from alien import Alien
+from button import Button
 from laser import Laser
 from ship import Ship
 
@@ -81,7 +82,7 @@ def check_loss_conditions(screen, ship, lasers, aliens):
 
 
 def main():
-    """Run the game and handle movement, collisions, and restarts."""
+    """Run the game and manage the Play button and active game state."""
     pygame.init()
 
     screen = pygame.display.set_mode((1200, 800))
@@ -91,6 +92,9 @@ def main():
     ship = Ship(screen)
     lasers = []
     aliens = create_fleet(screen)
+    play_button = Button(screen)
+
+    game_active = False
 
     while True:
         for event in pygame.event.get():
@@ -98,7 +102,12 @@ def main():
                 pygame.quit()
                 sys.exit()
 
-            elif event.type == pygame.KEYDOWN:
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if not game_active and play_button.is_clicked(event.pos):
+                    restart_game(screen, ship, lasers, aliens)
+                    game_active = True
+
+            elif event.type == pygame.KEYDOWN and game_active:
                 if event.key == pygame.K_UP:
                     ship.moving_up = True
                 elif event.key == pygame.K_DOWN:
@@ -106,29 +115,30 @@ def main():
                 elif event.key == pygame.K_SPACE:
                     lasers.append(Laser(screen, ship))
 
-            elif event.type == pygame.KEYUP:
+            elif event.type == pygame.KEYUP and game_active:
                 if event.key == pygame.K_UP:
                     ship.moving_up = False
                 elif event.key == pygame.K_DOWN:
                     ship.moving_down = False
 
-        ship.update()
+        if game_active:
+            ship.update()
 
-        for laser in lasers:
-            laser.update()
+            for laser in lasers:
+                laser.update()
 
-        for alien in aliens:
-            alien.update()
+            for alien in aliens:
+                alien.update()
 
-        screen_right = screen.get_rect().right
-        lasers = [
-            laser
-            for laser in lasers
-            if laser.rect.left < screen_right
-        ]
+            screen_right = screen.get_rect().right
+            lasers = [
+                laser
+                for laser in lasers
+                if laser.rect.left < screen_right
+            ]
 
-        lasers = check_laser_alien_collisions(lasers, aliens)
-        check_loss_conditions(screen, ship, lasers, aliens)
+            lasers = check_laser_alien_collisions(lasers, aliens)
+            check_loss_conditions(screen, ship, lasers, aliens)
 
         screen.fill((20, 20, 40))
         ship.draw()
@@ -138,6 +148,9 @@ def main():
 
         for alien in aliens:
             alien.draw()
+
+        if not game_active:
+            play_button.draw()
 
         pygame.display.flip()
         clock.tick(60)
