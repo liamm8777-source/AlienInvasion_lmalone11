@@ -1,8 +1,8 @@
 """
 Program: Alien Invasion - Track 1
 Author: Liam Malone
-Purpose: Create a Pygame game with a Play button, ship, lasers, alien fleet,
-collisions, and game restart conditions.
+Purpose: Create a Pygame game with a Play button, HUD, ship, lasers,
+alien fleet, collisions, lives, and game states.
 Starter Code: Based on the Alien Invasion starter repository:
 https://github.com/RedBeard41/alien_Invasion_starter.git
 Date: 07/25/2026
@@ -14,6 +14,7 @@ import pygame
 
 from alien import Alien
 from button import Button
+from hud import HUD
 from laser import Laser
 from ship import Ship
 
@@ -40,8 +41,9 @@ def create_fleet(screen):
 
 
 def check_laser_alien_collisions(lasers, aliens):
-    """Remove lasers and aliens that collide with each other."""
+    """Remove collisions and return lasers and number of aliens hit."""
     remaining_lasers = []
+    aliens_destroyed = 0
 
     for laser in lasers:
         alien_hit = None
@@ -53,10 +55,11 @@ def check_laser_alien_collisions(lasers, aliens):
 
         if alien_hit is not None:
             aliens.remove(alien_hit)
+            aliens_destroyed += 1
         else:
             remaining_lasers.append(laser)
 
-    return remaining_lasers
+    return remaining_lasers, aliens_destroyed
 
 
 def restart_game(screen, ship, lasers, aliens):
@@ -70,19 +73,16 @@ def restart_game(screen, ship, lasers, aliens):
     aliens.extend(create_fleet(screen))
 
 
-def check_loss_conditions(screen, ship, lasers, aliens):
-    """Restart when an alien hits the ship or reaches the left edge."""
-    game_lost = any(
+def check_loss_conditions(ship, aliens):
+    """Return True when an alien hits the ship or left edge."""
+    return any(
         alien.rect.colliderect(ship.rect) or alien.rect.left <= 0
         for alien in aliens
     )
 
-    if game_lost:
-        restart_game(screen, ship, lasers, aliens)
-
 
 def main():
-    """Run the game and manage the Play button and active game state."""
+    """Run the game and manage gameplay, HUD, lives, and game states."""
     pygame.init()
 
     screen = pygame.display.set_mode((1200, 800))
@@ -93,8 +93,12 @@ def main():
     lasers = []
     aliens = create_fleet(screen)
     play_button = Button(screen)
+    hud = HUD(screen)
 
     game_active = False
+    score = 0
+    high_score = 0
+    lives = 3
 
     while True:
         for event in pygame.event.get():
@@ -104,6 +108,8 @@ def main():
 
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if not game_active and play_button.is_clicked(event.pos):
+                    score = 0
+                    lives = 3
                     restart_game(screen, ship, lasers, aliens)
                     game_active = True
 
@@ -137,8 +143,24 @@ def main():
                 if laser.rect.left < screen_right
             ]
 
-            lasers = check_laser_alien_collisions(lasers, aliens)
-            check_loss_conditions(screen, ship, lasers, aliens)
+            lasers, aliens_destroyed = (
+                check_laser_alien_collisions(lasers, aliens)
+            )
+
+            score += aliens_destroyed * 100
+
+            if score > high_score:
+                high_score = score
+
+            if check_loss_conditions(ship, aliens):
+                lives -= 1
+
+                if lives > 0:
+                    restart_game(screen, ship, lasers, aliens)
+                else:
+                    game_active = False
+                    ship.moving_up = False
+                    ship.moving_down = False
 
         screen.fill((20, 20, 40))
         ship.draw()
@@ -148,6 +170,8 @@ def main():
 
         for alien in aliens:
             alien.draw()
+
+        hud.draw(score, high_score, lives)
 
         if not game_active:
             play_button.draw()
