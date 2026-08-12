@@ -162,6 +162,8 @@ def main():
                     ship.moving_up = False
                     ship.moving_down = False
 
+        pygame.mouse.set_visible(not game_active)
+
         screen.fill((20, 20, 40))
         ship.draw()
 
